@@ -6,14 +6,14 @@ STDIN.reopen("/dev/tty")
 # track if any changes were made as part of running this pre-push hook. if so, the user will need to re-commit their files
 file_changes_made = false
 
-#set the current branch name to be the current branch you're on
-curr_branch_name = `git symbolic-ref -q --short HEAD`
-
+#set the current branch name to be the current branch you're on --> need to check that this works as part of push
+# curr_branch_name = `git symbolic-ref -q --short HEAD`
+curr_branch_name = `git rev-parse --abbrev-ref HEAD`
 # `git cherry` will display the SHAs for commits not applied to the upstream..this doesn't work on the first
 # push, even with -u upstream specified
 # raw_sha_list = `git cherry origin/#{curr_branch_name}`
 
-# detected changes files changed in other branches will prompt for a re-commit 
+# detected changes files changed in other branches will prompt for a re-commit
 # if it's for other than trailing whitespace
 
 # raw_sha_list lists all the local, unpushed commit SHAs from your crrent branch
@@ -53,13 +53,13 @@ committed_files.uniq.each { |file_name|
     puts "Checking for debugger statements left behind..."
 
     # open each JS file that was changed and run through prompt
-    File.open(file_name, 'r').each_with_index { |line, idx| 
-      #skip over file if the lines begin with comments 
+    File.open(file_name, 'r').each_with_index { |line, idx|
+      #skip over file if the lines begin with comments
       next if line =~  /^$|\"/
       next if line =~  /^$|\'/
-      next if line =~ /^$|\// 
+      next if line =~ /^$|\//
       next if line =~  /^$|\#/
-      
+
       #if we find a debugger statement
       if line =~ /debugger/
 
@@ -71,7 +71,7 @@ committed_files.uniq.each { |file_name|
           if idx <2 || idx > IO.readlines(file_name).size-2
             puts line
           else
-            puts IO.readlines(file_name)[idx-2..idx+2].join() 
+            puts IO.readlines(file_name)[idx-2..idx+2].join()
           end
         end
 
@@ -81,7 +81,7 @@ committed_files.uniq.each { |file_name|
         case response
         when 'y'
           newer_contents = File.read(file_name).gsub(/debugger;|debugger/, "")
-            File.open(file_name, "w") {|file| file.puts newer_contents } 
+            File.open(file_name, "w") {|file| file.puts newer_contents }
             puts 'replaced!'
             file_changes_made = true
         when 'n'
@@ -97,12 +97,12 @@ committed_files.uniq.each { |file_name|
 
   # adding a newline at the end of a file based on reading the last line of the file
   last = IO.readlines(file_name).size
-  
+
   # we can eventually remove this puts statement for reading existing new lines and append when there's not one
   if IO.readlines(file_name)[last-1] =~ /\n/
     puts 'blank line present'
   # if the last line isn't a newline, open the file and append one
-  else 
+  else
     open(file_name, 'a') { |f|
     f.puts "\n"}
     puts 'Adding newline to end of your file...'
@@ -127,7 +127,7 @@ committed_files.uniq.each { |file_name|
 if file_changes_made
   puts "**File edits were made. Please re-commit your changes and push again.**"
   exit(1)
-else 
+else
   # exit 0 for a successful push
   exit(0)
 end
