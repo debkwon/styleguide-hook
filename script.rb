@@ -11,14 +11,11 @@ file_changes_made = false
 curr_branch_name = `git rev-parse --abbrev-ref HEAD`
 # `git cherry` will display the SHAs for commits not applied to the upstream..this doesn't work on the first
 # push, even with -u upstream specified
-# raw_sha_list = `git cherry origin/#{curr_branch_name}`
 
 # detected changes files changed in other branches will prompt for a re-commit
 # if it's for other than trailing whitespace
 
 # raw_sha_list lists all the local, unpushed commit SHAs from your crrent branch
-# raw_sha_list = `git log --graph #{curr_branch_name} --not --remotes --pretty-format="format:%h"`
-# git log --graph try_dry --format=%H
 
 raw_sha_list = `git log --graph --pretty=format:'%H' #{curr_branch_name}`
 
@@ -28,8 +25,7 @@ raw_sha_list.each_line { |sha|
   # using the .tr method on the sha makes a copy of the sha and replaces instances that matches with the to_str (second arg),
   # unless the range starts with a ^ carrot, in which case, it replaces on matches outside the range
   curr_sha = sha.tr('^A-Za-z0-9', '')
-  # this puts statement can be removed
-  puts "This is the current sha #{curr_sha}"
+
   # this `git diff-tree --no-commit-id --name-only -r <SHA>` will list the files of an individual commit when you add the SHA
   # on each iteration, set the changed_files variable to be the list of files from a particular commit, based its SHA
   changed_files =  `git diff-tree --no-commit-id --name-only -r #{curr_sha}`
@@ -126,6 +122,10 @@ committed_files.uniq.each { |file_name|
   # s/ => substitute command followed by regex
   # last part is the target file
   system("sed -i '' 's/[ \t]*$//' #{file_name}")
+  if system("-s #{file_name}") print "updated #{file_name}"
+  # find a way to add in changes automatically without re-committing in hook
+
+
 }
 
 # if the user made any changes while executing this hook, then ask for a re-commit and abort the user push
