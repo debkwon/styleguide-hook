@@ -31,7 +31,7 @@ raw_sha_list.each_line { |sha|
 
   # this `git diff-tree --no-commit-id --name-only -r <SHA>` will list the files of an individual commit when you add the SHA
   # on each iteration, set the changed_files variable to be the list of files from a particular commit, based its SHA
-  changed_files =  `git diff-tree --no-commit-id --name-only -r #{curr_sha}`
+  changed_files =  `git diff-tree --name-only -r #{curr_sha}`
 # d4cd1e17d7e6429700310a9661b270db92d40fd2
   # loop over the changed_files and add in each file that's part of a commit and add into the committed_files arr
   changed_files.each_line { |file|
