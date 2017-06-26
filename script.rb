@@ -110,6 +110,8 @@ committed_files.uniq.each { |file_name|
   #   file_changes_made = true
   # end
 
+
+  # ***************Beginning of EXPERIMENT with sed to replace multiple newlines**************
   last = IO.readlines(file_name).size
 
   # assign variables depending on if there are multiple newlines or no newline present at the end of the file
@@ -117,19 +119,19 @@ committed_files.uniq.each { |file_name|
   IO.readlines(file_name)[last-1] !~ /\n/ ? no_newline = true : no_newline = false
 
   # if the file has multiple trailing newlines and has a newline
-  if multiple_newlines && !no_newline
-    # delete multiple newlines at the end of the file
-    system("sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' #{file_name}")
-    # system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
-  end
+  # if multiple_newlines && !no_newline
+  #   # delete multiple newlines at the end of the file -> this is currently unterminated so need to figure out if any chars need to be escaped
+  #   system("sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' #{file_name}")
+  #   # system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
+  # end
   # if the last line isn't a newline or we had multiple newlines from before, open the file and append one
-  if multiple_newlines || no_newline
+  if no_newline
     open(file_name, 'a') { |f|
       f.puts "\n"}
       puts 'Adding newline to end of your file...'
       file_changes_made = true
   end
-
+  # ***************End of EXPERIMENT with sed to replace multiple newlines**************
 
   # this handles trailing whitespace removal
   puts "Removing any trailing whitespace..."
@@ -160,4 +162,7 @@ else
   # exit 0 for a successful push
   exit(0)
 end
+
+
+
 
