@@ -97,18 +97,38 @@ committed_files.uniq.each { |file_name|
   # ****Non-JS specific checks (newline and trailing whitespace)****
 
   # adding a newline at the end of a file based on reading the last line of the file
+  # last = IO.readlines(file_name).size
+
+  # # we can eventually remove this puts statement for reading existing new lines and append when there's not one
+  # if IO.readlines(file_name)[last-1] =~ /\n/
+  #   puts 'blank line present'
+  # # if the last line isn't a newline, open the file and append one
+  # else
+  #   open(file_name, 'a') { |f|
+  #   f.puts "\n"}
+  #   puts 'Adding newline to end of your file...'
+  #   file_changes_made = true
+  # end
+
   last = IO.readlines(file_name).size
 
-  # we can eventually remove this puts statement for reading existing new lines and append when there's not one
-  if IO.readlines(file_name)[last-1] =~ /\n/
-    puts 'blank line present'
-  # if the last line isn't a newline, open the file and append one
-  else
+  # assign variables depending on if there are multiple newlines or no newline present at the end of the file
+  IO.readlines(file_name)[last-1] =~ /\n/ && IO.readlines(file_name)[last-2] =~ /\n/ ? multiple_newlines = true : multiple_newlines = false
+  IO.readlines(file_name)[last-1] !~ /\n/ ? no_newline = true : no_newline = false
+
+  # if the file has multiple trailing newlines and has a newline
+  if multiple_newlines && !no_newline
+    # delete multiple newlines at the end of the file
+    system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
+  # if the last line isn't a newline or we had multiple newlines from before, open the file and append one
+  if multiple_newlines || no_newline
     open(file_name, 'a') { |f|
-    f.puts "\n"}
-    puts 'Adding newline to end of your file...'
-    file_changes_made = true
+      f.puts "\n"}
+      puts 'Adding newline to end of your file...'
+      file_changes_made = true
+    }
   end
+
 
   # this handles trailing whitespace removal
   puts "Removing any trailing whitespace..."
@@ -121,10 +141,11 @@ committed_files.uniq.each { |file_name|
   # '' => empty extension: removing this will cause errors unless you provide an extension to the -i flag
   # s/ => substitute command followed by regex
   # last part is the target file
-  system("sed -i '' 's/[ \t]*$//w' #{file_name}")
-  if system("-s #{file_name}") 
-    print "updated #{file_name}"
-  end
+  system("sed -i '' 's/[ \t]*$//' #{file_name}")
+
+  # if system("-s #{file_name}") 
+  #   print "updated #{file_name}"
+  # end
   # find a way to add in changes automatically without re-committing in hook
 
 
