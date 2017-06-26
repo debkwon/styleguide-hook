@@ -119,14 +119,15 @@ committed_files.uniq.each { |file_name|
   # if the file has multiple trailing newlines and has a newline
   if multiple_newlines && !no_newline
     # delete multiple newlines at the end of the file
-    system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
+    system("sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' #{file_name}")
+    # system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
+  end
   # if the last line isn't a newline or we had multiple newlines from before, open the file and append one
   if multiple_newlines || no_newline
     open(file_name, 'a') { |f|
       f.puts "\n"}
       puts 'Adding newline to end of your file...'
       file_changes_made = true
-    }
   end
 
 
@@ -143,7 +144,7 @@ committed_files.uniq.each { |file_name|
   # last part is the target file
   system("sed -i '' 's/[ \t]*$//' #{file_name}")
 
-  # if system("-s #{file_name}") 
+  # if system("-s #{file_name}")
   #   print "updated #{file_name}"
   # end
   # find a way to add in changes automatically without re-committing in hook
@@ -159,3 +160,4 @@ else
   # exit 0 for a successful push
   exit(0)
 end
+
