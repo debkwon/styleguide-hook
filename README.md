@@ -1,4 +1,4 @@
-## Styling Tool - testing git hooks checklist ##
+## Styling Tool - testing git hooks checklist ##  
 
 * Check for debugger statements.
 * Check for trailing whitespace.
