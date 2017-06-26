@@ -121,8 +121,10 @@ committed_files.uniq.each { |file_name|
   # '' => empty extension: removing this will cause errors unless you provide an extension to the -i flag
   # s/ => substitute command followed by regex
   # last part is the target file
-  system("sed -i '' 's/[ \t]*$//' #{file_name}")
-  if system("-s #{file_name}") print "updated #{file_name}"
+  system("sed -i '' 's/[ \t]*$//w' #{file_name}")
+  if system("-s #{file_name}") 
+    print "updated #{file_name}"
+  end
   # find a way to add in changes automatically without re-committing in hook
 
 
