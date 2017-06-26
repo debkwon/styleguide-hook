@@ -8,4 +8,4 @@ window.getQueryVariable = (variable) ->
     i++
   return
 
-  debugger
+
