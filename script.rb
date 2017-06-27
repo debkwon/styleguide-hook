@@ -112,20 +112,22 @@ committed_files.uniq.each { |file_name|
 
 
   # ***************Beginning of EXPERIMENT with sed to replace multiple newlines**************
-  last = IO.readlines(file_name).size
+  # last = IO.readlines(file_name).size
 
   # assign variables depending on if there are multiple newlines or no newline present at the end of the file
-  IO.readlines(file_name)[last-1] =~ /\n/ && IO.readlines(file_name)[last-2] =~ /\n/ ? multiple_newlines = true : multiple_newlines = false
-  IO.readlines(file_name)[last-1] !~ /\n/ ? no_newline = true : no_newline = false
+  # IO.readlines(file_name)[last-1] =~ /\n/ && IO.readlines(file_name)[last-2] =~ /\n/ ? multiple_newlines = true : multiple_newlines = false
+  # IO.readlines(file_name)[last-1] !~ /\n/ ? no_newline = true : no_newline = false
 
   # if the file has multiple trailing newlines and has a newline
-  if no_newline
+  # why does running script add a newline automatically to the file????
+  # if no_newline
   #   # delete multiple newlines at the end of the file -> this is currently unterminated so need to figure out if any chars need to be escaped
   #   system("sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' #{file_name}")
   #   # system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
-    print "last for #{file_name}: #{IO.readlines(file_name)[last-1]}"
-    print "second to #{file_name}: #{IO.readlines(file_name)[last-2]}"
-  end
+    # print "last for #{file_name}: #{IO.readlines(file_name)[last-1]}"
+    # print "second to #{file_name}: #{IO.readlines(file_name)[last-2]}"
+  # end
+
   # if the last line isn't a newline or we had multiple newlines from before, open the file and append one
   # if no_newline
   #   open(file_name, 'a') { |f|
