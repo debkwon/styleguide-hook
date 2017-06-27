@@ -1,5 +1,14 @@
 #!/usr/bin/env ruby
 
+# This pre-push hook is meant to run when you push your changes to a remote repository.
+# If the script does not run automatically, please check that you enabled this git hook by:
+#   1) removing the .sample extension from the file
+#   2) `chmod +x pre-push` without the backticks in your .git/hooks folder
+
+# There are checks for trailing whitespace, leftover debugger statements, and a single newline at the end of each file.
+
+# The script runs only on committed files that are about to be pushed from the current branch you're on.
+
 # keep this STDIN.reopen line to allow for reading user input
 STDIN.reopen("/dev/tty")
 
@@ -92,52 +101,61 @@ committed_files.uniq.each { |file_name|
         end
       end
     }
-  end # end statement for JS/CoffeeScript extension
+  end # end statement for JS/CoffeeScript extension conditional
 
   # ****Non-JS specific checks (newline and trailing whitespace)****
 
   # adding a newline at the end of a file based on reading the last line of the file
-  # last = IO.readlines(file_name).size
+  last = IO.readlines(file_name).size
 
   # # we can eventually remove this puts statement for reading existing new lines and append when there's not one
-  # if IO.readlines(file_name)[last-1] =~ /\n/
-  #   puts 'blank line present'
-  # # if the last line isn't a newline, open the file and append one
-  # else
-  #   open(file_name, 'a') { |f|
-  #   f.puts "\n"}
-  #   puts 'Adding newline to end of your file...'
-  #   file_changes_made = true
-  # end
-
-  # ***************Beginning of EXPERIMENT with sed to replace multiple newlines**************
-  last = IO.readlines(file_name).size
-  lastLine = IO.readlines(file_name)[last]
-  secondToLastLine = IO.readlines(file_name)[last-1]
-  # assign variables depending on if there are multiple newlines or no newline present at the end of the file
-  lastLine =~ /\s/ && secondToLastLine =~ /\s/ ? multiple_newlines = true : multiple_newlines = false
-  lastLine !~ /\s/ ? no_newline = true : no_newline = false
-  # puts "#{multiple_newlines} multiple for #{file_name}"
-  # puts "#{no_newline} single for #{file_name}"
-
-  # if the file has multiple trailing newlines
-  if multiple_newlines && !no_newline
-      puts "multiple_newlines"
-  #   # delete multiple newlines at the end of the file -> this is currently unterminated so need to figure out if any chars need to be escaped
-    system("sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' #{file_name}")
-  #   # system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
-  #   print "last for #{file_name}: #{lastLine}"
-  #   print "second to #{file_name}: #{secondToLastLine}"
-  end
-
-  # if the last line isn't a newline or we had multiple newlines from before, open the file and append one
-  if no_newline
+  if IO.readlines(file_name)[last-1] =~ /\n/
+    puts 'blank line present'
+  # if the last line isn't a newline, open the file and append one
+  else
     open(file_name, 'a') { |f|
       f.puts "\n"
     }
     puts 'Adding newline to end of your file...'
     file_changes_made = true
   end
+
+  # ***************Beginning of EXPERIMENT with sed to replace multiple newlines**************
+
+  # assign variables depending on if there are multiple newlines or no newline present at the end of the file
+  # /\s/ matches whitespace
+  # possibleNewline =~ /\s/ && possibleExtraNewline =~ /\s/ ? multiple_newlines = true : multiple_newlines = false
+  # possibleNewline !~ /\s/ ? no_newline = true : no_newline = false
+
+
+
+  # if the file has multiple trailing newlines
+  # if multiple_newlines && !no_newline
+    # puts "multiple_newlines"
+  #   # delete multiple newlines at the end of the file -> this is currently unterminated so need to figure out if any chars need to be escaped
+    # system("sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' #{file_name}")
+
+
+    # check if last line is an empty line. if so delete this line
+    # system("sed -i '$ { /^$/ d}' #{file_name}")
+    # fix syntax for below
+    # system("sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' #{file_name}")
+  #   print "last for #{file_name}: #{lastLine}"
+  #   print "second to #{file_name}: #{secondToLastLine}"
+  # end
+
+  # puts "this is the possible newline: #{possibleNewline} in #{file_name} #{no_newline}"
+
+
+  # if the last line isn't a newline or we had multiple newlines from before, open the file and append one
+  # if no_newline
+  #   puts "this is the possible newline: #{possibleNewline} in #{file_name} #{no_newline}"
+  #   open(file_name, 'a') { |f|
+  #     f.puts "\n"
+  #   }
+  #   puts 'Adding newline to end of your file...'
+  #   file_changes_made = true
+  # end
   # ***************End of EXPERIMENT with sed to replace multiple newlines**************
 
   # this handles trailing whitespace removal
@@ -157,37 +175,17 @@ committed_files.uniq.each { |file_name|
   #   print "updated #{file_name}"
   # end
   # find a way to add in changes automatically without re-committing in hook
-
-
 }
 
+# determine whether there are unstaged files at the end
+
 # if the user made any changes while executing this hook, then ask for a re-commit and abort the user push
-if file_changes_made
+# if file_changes_made
+if !`git diff-files --quiet`
   puts "**File edits were made. Please re-commit your changes and push again.**"
   exit(1)
 else
   # exit 0 for a successful push
   exit(0)
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

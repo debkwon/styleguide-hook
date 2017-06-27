@@ -5,11 +5,7 @@ require 'pry'
 def testing_method(stuff)
 	puts stuff["down"]
 
-	binding.pry
+	binding.pry   
 
 	the_ending = "can't be reached bc of the above pry message"
 end
-
-
-
-

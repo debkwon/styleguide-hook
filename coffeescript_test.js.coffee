@@ -7,7 +7,3 @@ window.getQueryVariable = (variable) ->
     return decodeURIComponent(pair[1]) if decodeURIComponent(pair[0]) == variable
     i++
   return
-
-
-
-

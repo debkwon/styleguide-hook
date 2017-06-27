@@ -19,6 +19,29 @@ Go to your repo in the command line:
 	git push -u origin <your-new-branch-name>
 
 
+## Future versions ##  
+
+If you would like to add rules to encourage code styling best practices, 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
