@@ -18,3 +18,21 @@ Go to your repo in the command line:
 * you're all set -- if you're pushing up changes for a new branch, you should push with the '-u flag':
 	git push -u origin <your-new-branch-name>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
