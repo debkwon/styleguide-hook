@@ -3,14 +3,14 @@ require 'pry'
 
 # this example method can take a hash as an arg and prints out the value for the "down" key
 def testing_method(stuff)
-	puts stuff["down"]       
+	puts stuff["down"]
 
-	binding.pry    
+	binding.pry
 
 	the_ending = "can't be reached bc of the above pry message"
 end
 
-puts "new line of code"     
+puts "new line of code"
 
 
 
