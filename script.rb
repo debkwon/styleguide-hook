@@ -8,9 +8,9 @@
 # run_scripts is called at the end of this file. It will run each of the style checks on every committed file in the push
 def run_scripts(committed_files)
   # keep this STDIN.reopen line to allow for reading user input
-  STDIN.reopen("/dev/tty") 
+  STDIN.reopen("/dev/tty")
   # for each of the files in the committed_files array, call the different style checks
-  committed_files.each { |file_name| 
+  committed_files.each { |file_name|
     # you can specify which code style checks you want to enforce through this hook
     # you would add/remove any rules here. For example: new_style_rule(file_name)
     debugger_check(file_name)
@@ -83,7 +83,7 @@ def debugger_check(file_name)
         response = STDIN.gets.chomp.downcase
 
         case response
-        # if the user wants to automatically make a change, this block will open up the current file and sub 'debugger' or 'debugger;' with an empty string. 
+        # if the user wants to automatically make a change, this block will open up the current file and sub 'debugger' or 'debugger;' with an empty string.
         # This does not currently remove the new line created by the debugger statement in the first place
         when 'y'
           newer_contents = File.read(file_name).gsub(/debugger;|debugger/, "")
@@ -99,11 +99,15 @@ end
 # newline_check makes sure there is only a single newline at the end of each file
 def newline_check(file_name)
   # check if the file has no newline or multiple newlines
-  lastLine = IO.readlines(file_name).last
-  puts lastLine
-  # text = File.read(file_name)
-  
-  # File.open(file_name, "w") { |file| file.puts process(text) }
+  lines = File.open(file_name, 'r').to_a
+  # if the last character of the last line with code is a newline character AND there is additional text on that line, set hasSingleNewline to true; otherwise set it to false
+  hasSingleNewline = lines.last[-1] == "\n" && lines.last.length > 1
+  # if there isn't already a single newline at the end of the file, call the process(text) method to add one in (or delete multiple ones and add a newline in)
+  if !hasSingleNewline
+    text = File.read(file_name)
+    # re-write the file with the final file text returned by the process(text) method
+    File.open(file_name, "w") { |file| file.puts process(text) }
+  end
 end
 
 def process(text)
@@ -113,10 +117,10 @@ def process(text)
     text = text[0..-2]
     # recursively call the function to delete newlines, one at a time
     process(text)
-  # if the last line does not have a newline, add in the newline character
   else
+    # add the single newline character
     text = text+"\n"
-    # return the new text 
+    # return the new text with just one newline at the end
     text
   end
 end

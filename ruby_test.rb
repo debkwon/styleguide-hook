@@ -11,9 +11,3 @@ def testing_method(stuff)
 end
 
 puts "new line of code"
-
-
-
-
-
-
