@@ -179,13 +179,15 @@ committed_files.uniq.each { |file_name|
 
 # determine whether there are unstaged files at the end
 
-# if the user made any changes while executing this hook, then ask for a re-commit and abort the user push
-# if file_changes_made
-if !`git diff-files --quiet`
-  puts "**File edits were made. Please re-commit your changes and push again.**"
-  exit(1)
+# if the user modified any files while executing this hook, then ask for a re-commit and abort the user push
+check_for_changes = `git ls-files --modified`
+
+if check_for_changes.each_line { |line|
+  if committed_files.include?(line.rstrip())
+    puts "**File have been edited. Please stage/re-commit your changes and push again**"
+    exit(1)
+  end
+}
 else
-  # exit 0 for a successful push
   exit(0)
 end
-
